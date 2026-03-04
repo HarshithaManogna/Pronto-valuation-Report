@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pronto Moto Services - Valuation Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="app" class="py-4 sm:py-10 flex flex-col items-center">
+        <!-- Controls -->
+        <div class="mb-8 flex flex-wrap justify-center gap-3 no-print w-full max-w-6xl px-4 relative z-50">
+            <button id="download-pdf" onclick="generatePDF(this)" class="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors font-bold text-sm sm:text-base flex-1 min-w-[140px]">
+                <i data-lucide="download" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                <span>Generate PDF</span>
+            </button>
+
+            <button id="upload-pdf-trigger" onclick="triggerPDFUpload()" class="flex items-center justify-center gap-2 bg-amber-500 text-white px-4 sm:px-6 py-2 rounded-lg shadow-md hover:bg-amber-600 transition-colors font-bold text-sm sm:text-base flex-1 min-w-[140px]">
+                <i data-lucide="upload" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                <span>Upload PDF</span>
+            </button>
+            <input type="file" id="pdf-upload-input" class="hidden" accept=".pdf">
+            
+            <div id="video-link-container" class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-md border-2 border-blue-200 w-full lg:w-auto lg:min-w-[360px] lg:flex-grow max-w-xl transition-all focus-within:border-blue-500 hover:border-blue-300">
+                <div class="flex items-center gap-1.5 shrink-0 border-r border-gray-200 pr-2 mr-1">
+                    <input type="checkbox" id="video-visibility-toggle" onchange="toggleVideoVisibility(this)" checked class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                    <i data-lucide="video" class="w-4 h-4 text-blue-500"></i>
+                    <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider hidden sm:inline">Video Link</span>
+                </div>
+                <input type="text" id="video-link-input" oninput="updateVideoLink(this.value)" placeholder="Paste URL (YouTube, Drive, etc.)" class="flex-1 bg-transparent outline-none text-sm font-medium text-gray-700 min-w-0">
+            </div>
+
+            <button id="add-photo" onclick="addPhoto()" class="flex items-center justify-center gap-2 bg-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg shadow-md hover:bg-purple-700 transition-colors font-bold text-sm sm:text-base flex-1 min-w-[140px]">
+                <i data-lucide="plus-circle" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                <span>Add Photo</span>
+            </button>
+
+            <button id="reset-form" onclick="resetForm()" class="flex items-center justify-center gap-2 bg-red-600 text-white px-4 sm:px-6 py-2 rounded-lg shadow-md hover:bg-red-700 transition-colors font-bold text-sm sm:text-base flex-1 min-w-[140px] cursor-pointer">
+                <i data-lucide="trash-2" class="w-4 h-4 sm:w-5 sm:h-5 pointer-events-none"></i>
+                <span class="pointer-events-none">Reset Form</span>
+            </button>
+
+            <!-- Watermark Control -->
+            <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-md border-2 border-gray-200 no-print">
+                <i data-lucide="type" class="w-4 h-4 text-gray-500"></i>
+                <div class="flex flex-col">
+                    <span class="text-[8px] font-bold text-gray-400 uppercase tracking-tighter">Watermark Text</span>
+                    <textarea id="global-device-name" placeholder="Line 1&#10;Line 2" rows="2"
+                        oninput="updateField('defaultDeviceName', this.value); render();"
+                        class="text-xs border-none outline-none focus:ring-0 w-48 font-medium p-0 resize-none leading-tight bg-transparent"
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Zoom Controls -->
+            <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-md border-2 border-gray-200 no-print">
+                <button id="zoom-out" onclick="zoomOut()" class="p-1 hover:bg-gray-100 rounded text-gray-600" title="Zoom Out">
+                    <i data-lucide="minus" class="w-4 h-4"></i>
+                </button>
+                <span id="zoom-level" class="text-xs font-bold text-gray-600 min-w-[40px] text-center">100%</span>
+                <button id="zoom-in" onclick="zoomIn()" class="p-1 hover:bg-gray-100 rounded text-gray-600" title="Zoom In">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                </button>
+                <button id="zoom-reset" onclick="zoomReset()" class="ml-1 text-[10px] font-bold text-blue-600 hover:underline uppercase">Reset Zoom</button>
+            </div>
+        </div>
+
+        <!-- Report Container -->
+        <div class="w-full overflow-x-auto pb-10 flex justify-start lg:justify-center px-4">
+            <div id="report-container" class="flex flex-col gap-0 min-w-[210mm] origin-top transition-transform duration-200 shadow-2xl">
+                <!-- Pages will be injected here by script.js -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

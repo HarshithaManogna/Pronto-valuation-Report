@@ -1,0 +1,5 @@
+{
+  "name": "Remix: Pronto Moto Valuation",
+  "description": "A professional vehicle valuation report generator with PDF and Excel export capabilities.",
+  "requestFramePermissions": []
+}
